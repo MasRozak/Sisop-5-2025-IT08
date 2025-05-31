@@ -1,11 +1,13 @@
-# Sisop-5-2025-IT-Template
+# Sisop-8-2025-IT08
 
-## Kelompok
+## Kelompok 8
 
-Nama | NRP
---- | ---
-Amoes Noland | 5027231028
-Rafi' Afnaan Fathurrahman | 5027231040
+| Nama | NRP |
+| ---------------------- | ---------- |
+| Arya Bisma Putra Refman | 5027241036 |
+| Moch. Rizki Nasrullah | 5027241038 |
+| Nadia Fauziazahra Kusumastuti | 5027241094 |
+----
 
 ## Daftar Isi
 
