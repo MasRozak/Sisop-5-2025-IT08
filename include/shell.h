@@ -9,5 +9,6 @@ void printPrompt();
 
 extern char username[64];
 extern char grandcompany[16];
+extern char color;
 
 #endif // __SHELL_H__
