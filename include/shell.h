@@ -5,7 +5,9 @@
 
 void shell();
 void parseCommand(char *buf, char *cmd, char arg[2][64]);
+void printPrompt();
 
-// Tambahkan fungsi bila perlu
+extern char username[64];
+extern char grandcompany[16];
 
 #endif // __SHELL_H__
