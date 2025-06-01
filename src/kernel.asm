@@ -1,11 +1,11 @@
 ; kernel.asm
 
-global _putInMemory
-global _interrupt
-global _getBiosTick
+global putInMemory
+global interrupt
+global getBiosTick
 
 ; unsigned int getBiosTick()
-_getBiosTick:
+getBiosTick:
         mov ah, 0x00
         int 0x1A
         mov ax, dx
@@ -13,7 +13,7 @@ _getBiosTick:
         ret
 
 ; void putInMemory(int segment, int address, char character)
-_putInMemory:
+putInMemory:
 	push bp
 	mov bp,sp
 	push ds
@@ -27,7 +27,7 @@ _putInMemory:
 	ret
 
 ; int interrupt(int number, int AX, int BX, int CX, int DX)
-_interrupt:
+interrupt:
 	push bp
 	mov bp,sp
 	mov ax,[bp+4]

@@ -94,6 +94,10 @@ void shell() {
             random_index = mod(getBiosTick(), 3);
             printString(random_responses[random_index]);
             printString("\n");
+        } else if (strcmp(cmd, "yo") == true) {
+            printString("gurt\n");
+        } else if (strcmp(cmd, "gurt") == true) {
+            printString("yo\n");
         } else {
             printString(buf);
             printString("\n");

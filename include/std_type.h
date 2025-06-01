@@ -4,6 +4,7 @@
 typedef unsigned char byte;
 
 typedef char boolean;
+typedef char bool;
 #define true 1
 #define false 0
 
