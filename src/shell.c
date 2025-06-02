@@ -6,7 +6,6 @@ char username[64] = "user";
 char grandcompany[16] = "";
 char color = 0x07; 
 
-// Move random_responses to global static scope to allow initialization
 static char *random_responses[] = {"yo", "ts unami gng </3", "sygau"};
 
 void shell() {
@@ -52,50 +51,50 @@ void shell() {
             strcpy(grandcompany, "");
             color = 0x07; // Putih
             clearScreen();
-        // } else if (strcmp(cmd, "add") == true) {
-        //     int x, y, result;
-        //     char result_str[16];
-        //     atoi(arg[0], &x);
-        //     atoi(arg[1], &y);
-        //     result = x + y;
-        //     itoa(result, result_str);
-        //     printString(result_str);
-        //     printString("\n");
-        // } else if (strcmp(cmd, "sub") == true) {
-        //     int x, y, result;
-        //     char result_str[16];
-        //     atoi(arg[0], &x);
-        //     atoi(arg[1], &y);
-        //     result = x - y;
-        //     itoa(result, result_str);
-        //     printString(result_str);
-        //     printString("\n");
-        // } else if (strcmp(cmd, "mul") == true) {
-        //     int x, y, result;
-        //     char result_str[16];
-        //     atoi(arg[0], &x);
-        //     atoi(arg[1], &y);
-        //     result = x * y;
-        //     itoa(result, result_str);
-        //     printString(result_str);
-        //     printString("\n");
-        // } else if (strcmp(cmd, "div") == true) {
-        //     int x, y, result;
-        //     char result_str[16];
-        //     atoi(arg[0], &x);
-        //     atoi(arg[1], &y);
-        //     if (y == 0) {
-        //         printString("Division by zero\n");
-        //     } else {
-        //         result = div(x, y);
-        //         itoa(result, result_str);
-        //         printString(result_str);
-        //         printString("\n");
-        //     }
-        // } else if (strcmp(cmd, "yogurt") == true) {
-        //     random_index = imod(getBiosTick(), 3);
-        //     printString(random_responses[random_index]);
-        //     printString("\n");
+        } else if (strcmp(cmd, "add") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            result = x + y;
+            itoa(result, result_str);
+            printString(result_str);
+            printString("\n");
+        } else if (strcmp(cmd, "sub") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            result = x - y;
+            itoa(result, result_str);
+            printString(result_str);
+            printString("\n");
+        } else if (strcmp(cmd, "mul") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            result = x * y;
+            itoa(result, result_str);
+            printString(result_str);
+            printString("\n");
+        } else if (strcmp(cmd, "div") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            if (y == 0) {
+                printString("Division by zero\n");
+            } else {
+                result = div(x, y);
+                itoa(result, result_str);
+                printString(result_str);
+                printString("\n");
+            }
+        } else if (strcmp(cmd, "yogurt") == true) {
+            random_index = imod(getBiosTick(), 3);
+            printString(random_responses[random_index]);
+            printString("\n");
         } else if (strcmp(cmd, "yo") == true) {
             printString("gurt\n");
         } else if (strcmp(cmd, "gurt") == true) {
@@ -144,7 +143,8 @@ void parseCommand(char *buf, char *cmd, char arg[2][64]) {
 }
 
 void printPrompt() {
-    printString(username);
+printString("\r\n");
+printString(username);
     if (grandcompany[0] != '\0') {
         printString("@");
         printString(grandcompany);

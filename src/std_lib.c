@@ -22,23 +22,13 @@ int div(int a, int b) {
   return sign * quotient;
 }
 
-// int imod(int a, int b) {
-//   int sign = 1;
+int imod(int a, int b) {
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (a >= b) a -= b;
+    return a;
+}
 
-//   if (a < 0) {
-//     a = -a;
-//     sign = -1;
-//   }
-//   if (b < 0) {
-//     b = -b;
-//   }
-
-//   while (a >= b) {
-//     a -= b;
-//   }
-
-//   return sign * a;
-// }
 
 bool strcmp(char *str1, char *str2) {
   int i = 0;
@@ -83,34 +73,38 @@ void atoi(char *str, int *num) {
   *num = sign * result;
 }
 
-// void itoa(int num, char *str) {
-//   int i = 0;
-//   int sign = 1;
-//   int temp;
+void itoa(int num, char *str) {
+  int i = 0;
+  int sign = 0;
+  int temp = num;
 
-//   if (num < 0) {
-//     str[i++] = '-';
-//     num = -num;
-//   }
+  if (num < 0) {
+    sign = 1;
+    num = -num;
+  }
 
-//   temp = num;
-//   do {
-//     str[i++] = (temp % 10) + '0';
-//     temp /= 10;
-//   } while (temp > 0);
+  do {
+    str[i++] = imod(num, 10) + '0';   // GANTI %
+    num = div(num, 10);               // GANTI /
+  } while (num > 0);
 
-//   str[i] = '\0';
+  if (sign) {
+    str[i++] = '-';
+  }
 
-//   {
-//     int start = (str[0] == '-') ? 1 : 0;
-//     int end = i - 1;
-//     char c;
-//     while (start < end) {
-//     c = str[start];
-//     str[start] = str[end];
-//     start++;
-//     end--;
-//     }
-//   }
-// }
+  str[i] = '\0';
 
+  // Reverse string
+  {
+    int start = 0;
+    int end = i - 1;
+    char c;
+    while (start < end) {
+      c = str[start];
+      str[start] = str[end];
+      str[end] = c;
+      start++;
+      end--;
+    }
+  }
+}

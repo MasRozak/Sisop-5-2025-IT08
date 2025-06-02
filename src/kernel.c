@@ -10,14 +10,12 @@ int main() {
 
 void printString(char *str) {
     int i = 0;
-    int pos = 0;
     while (str[i] != '\0') {
-        putInMemory(0xB800, pos, str[i]);
-        putInMemory(0xB800, pos + 1, color);
+        interrupt(0x10, 0x0E00 | str[i], 0, 0, 0);
         i++;
-        pos += 2;
     }
 }
+
 
 void readString(char *buf) {
     int index = 0;
