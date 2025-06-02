@@ -1,19 +1,21 @@
-#include "shell.h"
-#include "kernel.h"
-#include "std_lib.h"
+#include "../include/shell.h"
+#include "../include/kernel.h"
+#include "../include/std_lib.h"
 
 char username[64] = "user";
 char grandcompany[16] = "";
 char color = 0x07; 
 
+// Move random_responses to global static scope to allow initialization
+static char *random_responses[] = {"yo", "ts unami gng </3", "sygau"};
+
 void shell() {
     char buf[128];
     char cmd[64];
     char arg[2][64];
-    char *random_responses[] = {"yo", "ts unami gng </3", "sygau"};
     int random_index;
 
-    printString("Welcome to EorzeOS!\n");
+    printString("Welcome to EorzeOS!\r\n");
     while (true) {
         printPrompt();
         readString(buf);
@@ -50,50 +52,50 @@ void shell() {
             strcpy(grandcompany, "");
             color = 0x07; // Putih
             clearScreen();
-        } else if (strcmp(cmd, "add") == true) {
-            int x, y, result;
-            atoi(arg[0], &x);
-            atoi(arg[1], &y);
-            result = x + y;
-            char result_str[16];
-            itoa(result, result_str);
-            printString(result_str);
-            printString("\n");
-        } else if (strcmp(cmd, "sub") == true) {
-            int x, y, result;
-            atoi(arg[0], &x);
-            atoi(arg[1], &y);
-            result = x - y;
-            char result_str[16];
-            itoa(result, result_str);
-            printString(result_str);
-            printString("\n");
-        } else if (strcmp(cmd, "mul") == true) {
-            int x, y, result;
-            atoi(arg[0], &x);
-            atoi(arg[1], &y);
-            result = x * y;
-            char result_str[16];
-            itoa(result, result_str);
-            printString(result_str);
-            printString("\n");
-        } else if (strcmp(cmd, "div") == true) {
-            int x, y, result;
-            atoi(arg[0], &x);
-            atoi(arg[1], &y);
-            if (y == 0) {
-                printString("Division by zero\n");
-            } else {
-                result = div(x, y);
-                char result_str[16];
-                itoa(result, result_str);
-                printString(result_str);
-                printString("\n");
-            }
-        } else if (strcmp(cmd, "yogurt") == true) {
-            random_index = mod(getBiosTick(), 3);
-            printString(random_responses[random_index]);
-            printString("\n");
+        // } else if (strcmp(cmd, "add") == true) {
+        //     int x, y, result;
+        //     char result_str[16];
+        //     atoi(arg[0], &x);
+        //     atoi(arg[1], &y);
+        //     result = x + y;
+        //     itoa(result, result_str);
+        //     printString(result_str);
+        //     printString("\n");
+        // } else if (strcmp(cmd, "sub") == true) {
+        //     int x, y, result;
+        //     char result_str[16];
+        //     atoi(arg[0], &x);
+        //     atoi(arg[1], &y);
+        //     result = x - y;
+        //     itoa(result, result_str);
+        //     printString(result_str);
+        //     printString("\n");
+        // } else if (strcmp(cmd, "mul") == true) {
+        //     int x, y, result;
+        //     char result_str[16];
+        //     atoi(arg[0], &x);
+        //     atoi(arg[1], &y);
+        //     result = x * y;
+        //     itoa(result, result_str);
+        //     printString(result_str);
+        //     printString("\n");
+        // } else if (strcmp(cmd, "div") == true) {
+        //     int x, y, result;
+        //     char result_str[16];
+        //     atoi(arg[0], &x);
+        //     atoi(arg[1], &y);
+        //     if (y == 0) {
+        //         printString("Division by zero\n");
+        //     } else {
+        //         result = div(x, y);
+        //         itoa(result, result_str);
+        //         printString(result_str);
+        //         printString("\n");
+        //     }
+        // } else if (strcmp(cmd, "yogurt") == true) {
+        //     random_index = imod(getBiosTick(), 3);
+        //     printString(random_responses[random_index]);
+        //     printString("\n");
         } else if (strcmp(cmd, "yo") == true) {
             printString("gurt\n");
         } else if (strcmp(cmd, "gurt") == true) {

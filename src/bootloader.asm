@@ -1,8 +1,9 @@
+
 ; bootloader.asm
 bits 16
 
 KERNEL_SEGMENT equ 0x1000 ; kernel will be loaded at 0x1000:0x0000
-KERNEL_SECTORS equ 30     ; kernel will be loaded in 30 sectors maximum
+KERNEL_SECTORS equ 15     ; kernel will be loaded in 15 sectors maximum
 KERNEL_START   equ 1      ; kernel will be loaded in sector 1
 
 ; bootloader code
@@ -22,8 +23,6 @@ bootloader:
 
   int 0x13                  ; call BIOS interrupts
 
-  jc disk_error_loop      ; If carry flag set, jump to error loop
-
   ; set up segment registers
   mov ax, KERNEL_SEGMENT
   mov ds, ax
@@ -37,14 +36,6 @@ bootloader:
 
   ; jump to kernel
   jmp KERNEL_SEGMENT:0x0000
-
-disk_error_loop:
-  mov ah, 0x0E          ; Teletype output
-  mov al, 'E'           ; Display 'E' for Error
-  mov bh, 0x00          ; Page 0
-  mov bl, 0x07          ; Attribute (white on black)
-  int 0x10              ; Call video interrupt
-  jmp disk_error_loop   ; Loop forever
 
   ; padding to make bootloader 512 bytes
   times 510-($-$$) db 0

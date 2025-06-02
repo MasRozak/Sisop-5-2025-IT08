@@ -14,7 +14,7 @@
 # now supported, but we still recommend to use the BIOS distributed with
 # Bochs. Now the start address can be calculated from image size.
 #=======================================================================
-romimage: file=/usr/local/share/bochs/BIOS-bochs-latest
+romimage: file=$BXSHARE/BIOS-bochs-latest
 
 #=======================================================================
 # CPU:
@@ -73,7 +73,7 @@ megs: 32
 # VGAROMIMAGE
 # You now need to load a VGA ROM BIOS into C0000.
 #=======================================================================
-vgaromimage: file=/usr/local/share/bochs/VGABIOS-lgpl-latest
+vgaromimage: file=$BXSHARE/VGABIOS-lgpl-latest
 
 #=======================================================================
 # VGA:
@@ -99,15 +99,14 @@ vga: extension=vbe
 #   floppya: 180k=path, status=inserted            (180K  5.25" floppy)
 #   floppya: 160k=path, status=inserted            (160K  5.25" floppy)
 #   floppya: image=path, status=inserted           (guess type from image size)
-#   floppya: none                                  (not present)
 #
-# Default file names for floppy disk images are:
-#   A: fdimage0.pc
-#   B: fdimage1.pc
-#
-# Bochs should be able to handle most FDD types, including 360K, 720K, 1.2M,
-# 1.44M, 1.68M, 1.72M, 2.88M.
-floppya: 1_44=/root/sisop5/Sisop-5-2025-IT-08/bin/floppy.img, status=inserted
+# The path should be the name of a disk image file.  On Unix, you can use a raw
+# device name such as /dev/fd0 on Linux.  On win32 platforms, use drive letters
+# such as a: or b: as the path.  The parameter 'image' works with image files
+# only. In that case the size must match one of the supported types.
+#=======================================================================
+# Nama image sistem operasi yang akan digunakan bochs
+floppya: 1_44=bin/floppy.img, status=inserted
 
 #=======================================================================
 # BOOT:
@@ -144,7 +143,7 @@ floppy_bootsig_check: disabled=0
 #   log: /dev/tty
 #=======================================================================
 # Log bochs, gunakan /dev/null untuk non verbose console log
-log: /tmp/bochsout.txt
+log: -
 
 #=======================================================================
 # LOG CONTROLS

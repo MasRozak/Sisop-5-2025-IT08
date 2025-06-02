@@ -1,5 +1,5 @@
-#include "std_lib.h"
-#include "std_type.h"
+#include "../include/std_lib.h" 
+#include "../include/std_type.h"
 
 int div(int a, int b) {
   int quotient = 0;
@@ -22,23 +22,23 @@ int div(int a, int b) {
   return sign * quotient;
 }
 
-int mod(int a, int b) {
-  int sign = 1;
+// int imod(int a, int b) {
+//   int sign = 1;
 
-  if (a < 0) {
-    a = -a;
-    sign = -1;
-  }
-  if (b < 0) {
-    b = -b;
-  }
+//   if (a < 0) {
+//     a = -a;
+//     sign = -1;
+//   }
+//   if (b < 0) {
+//     b = -b;
+//   }
 
-  while (a >= b) {
-    a -= b;
-  }
+//   while (a >= b) {
+//     a -= b;
+//   }
 
-  return sign * a;
-}
+//   return sign * a;
+// }
 
 bool strcmp(char *str1, char *str2) {
   int i = 0;
@@ -83,32 +83,34 @@ void atoi(char *str, int *num) {
   *num = sign * result;
 }
 
-void itoa(int num, char *str) {
-  int i = 0;
-  int sign = 1;
-  int temp;
+// void itoa(int num, char *str) {
+//   int i = 0;
+//   int sign = 1;
+//   int temp;
 
-  if (num < 0) {
-    str[i++] = '-';
-    num = -num;
-  }
+//   if (num < 0) {
+//     str[i++] = '-';
+//     num = -num;
+//   }
 
-  temp = num;
-  do {
-    str[i++] = (temp % 10) + '0';
-    temp /= 10;
-  } while (temp > 0);
+//   temp = num;
+//   do {
+//     str[i++] = (temp % 10) + '0';
+//     temp /= 10;
+//   } while (temp > 0);
 
-  str[i] = '\0';
+//   str[i] = '\0';
 
-  int start = (str[0] == '-') ? 1 : 0;
-  int end = i - 1;
-  char c;
-  while (start < end) {
-    c = str[start];
-    str[start] = str[end];
-    str[end] = c;
-    start++;
-    end--;
-  }
-}
+//   {
+//     int start = (str[0] == '-') ? 1 : 0;
+//     int end = i - 1;
+//     char c;
+//     while (start < end) {
+//     c = str[start];
+//     str[start] = str[end];
+//     start++;
+//     end--;
+//     }
+//   }
+// }
+

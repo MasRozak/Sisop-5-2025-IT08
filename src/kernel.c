@@ -1,5 +1,5 @@
-#include "shell.h"
-#include "kernel.h"
+#include "../include/shell.h"
+#include "../include/kernel.h"
 
 extern char color;
 
