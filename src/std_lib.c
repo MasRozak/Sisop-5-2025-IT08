@@ -84,8 +84,8 @@ void itoa(int num, char *str) {
   }
 
   do {
-    str[i++] = imod(num, 10) + '0';   // GANTI %
-    num = div(num, 10);               // GANTI /
+    str[i++] = imod(num, 10) + '0';   
+    num = div(num, 10);             
   } while (num > 0);
 
   if (sign) {
