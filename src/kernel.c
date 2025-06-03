@@ -49,5 +49,3 @@ void clearScreen() {
     }
     interrupt(0x10, 0x0200, 0, 0, 0);
 }
-
-// removed C implementation of getBiosTick() to prevent multiple definition
