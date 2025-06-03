@@ -181,4 +181,551 @@ https://github.com/user-attachments/assets/1cfa66b1-b2f5-4e3e-a4b2-ec8b012f6fbb
 
 ## Laporan
 
-> Isi sesuai pengerjaan.
+A. include
+1. shell.h
+```bash
+#ifndef __SHELL_H__
+#define __SHELL_H__
+
+#include "std_type.h"
+
+void shell();
+void parseCommand(char *buf, char *cmd, char arg[2][64]);
+void printPrompt();
+
+extern char username[64];
+extern char grandcompany[16];
+extern char color;
+
+#endif // __SHELL_H__
+```
+- `#ifndef __SHELL_H__` memeriksa apakah simbol `__SHELL_H__` belum didefinisikan.
+- Jika belum didefinisikan, `#define __SHELL_H__` mendefinisikan simbol tersebut, dan kode di antara `#ifndef` dan `#endif` akan di proses.
+- Jika simbol sudah didefinisikan (karena file sudah di-include sebelumnya), kompiler akan mengabaikan isi file ini.
+- Meng-include file header `std_type.h` yang mendefinisikan tipe data kustom seperti `byte (unsigned char)` dan `bool (char, dengan nilai true dan false)` dengan tujuan memberikan akses ke tipe data yang diperlukan oleh fungsi-fungsi dalam `shell.h`, seperti `bool` yang digunakan dalam fungsi seperti `strcmp` di modul lain (`std_lib.c`).
+- `void shell();`
+  - Mendeklarasikan fungsi `shell` yang merupakan fungsi utama untuk menjalankan shell interaktif `EorzeOS`.
+  - Fungsi ini bertanggung jawab untuk menampilkan prompt, membaca input pengguna, mem-parsing perintah, dan menjalankan aksi sesuai perintah seperti `user`, `grandcompany`, `clear`, atau operasi aritmatika (`add`, `sub`, `mul`, `div`).
+  - Tidak memiliki parameter atau nilai kembalian (`void`) karena berjalan dalam loop tak terbatas untuk menangani input pengguna.
+- `void parseCommand(char *buf, char *cmd, char arg[2][64]);`
+  - Mendeklarasikan fungsi parseCommand yang mem-parsing string input pengguna menjadi perintah (cmd) dan hingga dua argumen (arg[0] dan arg[1]).
+  - Parameter:
+    - `char *buf`: Buffer yang berisi string input pengguna.
+    - `char *cmd`: Buffer untuk menyimpan perintah yang diambil dari input (misalnya, "user", "add").
+    - `char arg[2][64]`: Array dua dimensi untuk menyimpan hingga dua argumen, masing-masing maksimal 64 karakter.
+  - Fungsi ini memisahkan input berdasarkan spasi dan menyimpan hasilnya untuk diproses lebih lanjut oleh shell.
+- `void printPrompt();`
+  - Mendeklarasikan fungsi `printPrompt` yang menampilkan prompt shell seperti `user>` atau `user@Storm>` tergantung pada nama pengguna dan afiliasi Grand Company.
+  - Tidak memiliki parameter atau nilai kembalian karena hanya menampilkan teks ke layar.
+- `extern char username[64];`
+  - Mendeklarasikan variabel global username, sebuah array karakter berukuran 64 byte untuk menyimpan nama pengguna (default: "user").
+  - Kata kunci extern menunjukkan bahwa variabel ini didefinisikan di file lain (misalnya, `shell.c`) dan hanya dideklarasikan di sini untuk digunakan di file lain yang meng-include `shell.h`.
+  - Digunakan untuk menyimpan nama pengguna yang dapat diubah melalui perintah `user <username>` atau direset ke "user" dengan perintah user.
+- `extern char grandcompany[16];`
+  - Mendeklarasikan variabel global `grandcompany`, sebuah array karakter berukuran 16 byte untuk menyimpan nama afiliasi Grand Company (misalnya, "`Storm`", "`Serpent`", atau "`Flame`").
+  - Variabel ini diatur oleh perintah `grandcompany <company>` dan dihapus oleh perintah `clear`.
+  - Juga bersifat extern, didefinisikan di `shell.c`.
+- `extern char color;`
+  - Mendeklarasikan variabel global `color`, sebuah variabel bertipe char untuk menyimpan kode warna terminal (misalnya, `0x07` untuk putih, `0x04` untuk merah, `0x0E` untuk kuning, `0x01` untuk biru).
+  - Digunakan untuk mengatur warna teks terminal berdasarkan perintah `grandcompany` atau `clear`.
+- `#endif` memastikan bahwa kode di dalam `#ifndef __SHELL_H__` hanya di proses sekali selama kompilasi
+
+2. std_type.h
+```bash
+#ifndef __STD_TYPE_H__
+#define __STD_TYPE_H__
+
+typedef unsigned char byte;
+
+typedef char boolean;
+typedef char bool;
+#define true 1
+#define false 0
+
+#endif // __STD_YPE_H__
+```
+- `typedef unsigned char byte;`
+  - Mendefinisikan tipe data kustom byte sebagai alias untuk `unsigned char`.
+    - `unsigned char` adalah tipe data 8-bit (1 byte) yang dapat menyimpan nilai dari 0 hingga 255 (`0x00` hingga `0xFF`).
+    - Tipe byte digunakan untuk operasi yang memerlukan manipulasi data pada level rendah, seperti pengisian memori video (misalnya, dalam fungsi `clearScreen` di `kernel.c`) atau pengelolaan buffer dalam `std_lib.c`.
+    - Memberikan nama yang lebih deskriptif dan konsisten untuk operasi berbasis byte, meningkatkan keterbacaan kode dan kompatibilitas dengan kebutuhan sistem operasi.
+- `typedef char boolean;` dan `typedef char bool;`
+  - Baris ini mendefinisikan dua tipe data kustom, `boolean` dan `bool`, sebagai alias untuk `char`.
+    - Dalam C, tipe data `boolean` atau `bool` tidak tersedia secara bawaan (tidak seperti di C++ atau bahasa lain), sehingga perlu didefinisikan secara eksplisit untuk sistem operasi ini.
+    - Keduanya menggunakan `char` (8-bit) untuk menyimpan nilai `boolean` yang nantinya diwakili oleh konstanta `true` (1) dan `false` (0).
+    - Penggunaan dua nama (boolean dan bool) bertujuan untuk fleksibilitas atau kompatibilitas dengan konvensi penamaan yang berbeda di berbagai modul dan menyediakan tipe data untuk operasi logika, seperti perbandingan string (`strcmp` di `std_lib.c`) atau pengambilan keputusan dalam logika `shell`.
+- `#define true 1` dan `#define false 0`
+  - Baris ini mendefinisikan dua konstanta makro, true dan false, untuk mewakili nilai boolean.
+    - `#define true 1` menetapkan nilai 1 sebagai representasi logika "benar".
+    - `#define false 0` menetapkan nilai 0 sebagai representasi logika "salah".
+    - Konstanta ini digunakan bersama tipe `boolean` atau `bool` untuk operasi logika, misalnya dalam fungsi `strcmp` di `std_lib.c` yang mengembalikan `true` jika dua string sama dan `false` jika berbeda.
+    - Bertujuan untuk memberikan cara standar untuk menangani logika boolean dalam kode, serta memastikan konsistensi dan keterbacaan.
+
+B. src
+1. kernel.c
+```bash
+#include "../include/shell.h"
+#include "../include/kernel.h"
+
+extern char color;
+
+int main() {
+    clearScreen();
+    shell();
+}
+
+void printString(char *str) {
+    int i = 0;
+    while (str[i] != '\0') {
+        interrupt(0x10, 0x0E00 | str[i], 0, 0, 0);
+        i++;
+    }
+}
+
+
+void readString(char *buf) {
+    int index = 0;
+    char c;
+    do {
+        c = (char)interrupt(0x16, 0x0000, 0, 0, 0);
+        
+        if (c == 0x0D) {
+            buf[index] = '\0';
+            interrupt(0x10, 0x0E00 | '\r', 0, 0, 0); 
+            interrupt(0x10, 0x0E00 | '\n', 0, 0, 0); 
+            break;
+        } else if (c == 0x08 && index > 0) {
+            index--;
+            interrupt(0x10, 0x0E00 | 0x08, 0, 0, 0);
+            interrupt(0x10, 0x0E00 | ' ', 0, 0, 0);
+            interrupt(0x10, 0x0E00 | 0x08, 0, 0, 0);
+        } else if (c >= 0x20 && index < 127) {
+            buf[index] = c;
+            index++;
+            interrupt(0x10, 0x0E00 | c, 0, 0, 0);
+        }
+    } while (true);
+}
+
+void clearScreen() {
+    int i;
+    for (i = 0; i < 80 * 25 * 2; i += 2) {
+        putInMemory(0xB800, i, ' ');
+        putInMemory(0xB800, i + 1, color);
+    }
+    interrupt(0x10, 0x0200, 0, 0, 0);
+}
+```
+- `#include "../include/shell.h" dan #include "../include/kernel.h"`
+  - Meng-include file header `shell.h` dan `kernel.h` untuk menyediakan deklarasi fungsi dan variabel yang diperlukan.
+    - `shell.h` mendeklarasikan fungsi `shell()` dan variabel seperti `username`, `grandcompany`, dan `color`.
+    - `kernel.h` mendeklarasikan fungsi seperti `_putInMemory`, `_interrupt`, `_getBiosTick`, serta fungsi lokal `printString`, `readString`, dan `clearScreen`.
+    - Path `../include/` menunjukkan lokasi file header di direktori include relatif terhadap `src`.
+    - Bertujuan untuk memungkinkan akses ke fungsi dan variabel dari modul lain.
+- `extern char color;`
+  - Mendeklarasikan variabel global `color` sebagai variabel eksternal yang didefinisikan di `shell.c`.
+    - Variabel ini menyimpan kode warna terminal (misalnya, 0x07 untuk putih, 0x04 untuk merah) untuk pengaturan atribut teks di memori video VGA.
+    - Digunakan oleh `clearScreen` untuk mengatur warna layar sesuai status `shell`.
+    - Bertujuan untuk menjaga konsistensi warna antar modul `kernel` dan `shell`.
+- `int main() { clearScreen(); shell(); }`
+  - Mendefinisikan fungsi `main` sebagai titik masuk `kernel` setelah `bootloader` memuat `kernel` ke memori.
+    - Memanggil `clearScreen()` untuk mengosongkan layar teks `80x25` dan mengatur kursor ke `(0,0)`.
+    - Memanggil `shell()` untuk memulai loop interaktif `shell`, memungkinkan interaksi pengguna.
+    - Dideklarasikan sebagai `int`, akan tetapi tidak mengembalikan nilai karena berjalan di lingkungan bare-metal tanpa sistem operasi yang menangani nilai kembalian.
+    - Bertujuan untuk menginisialisasi sistem dan memulai antarmuka pengguna.
+- `void printString(char *str) { ... }`
+  - Mendefinisikan fungsi `printString` untuk menampilkan `string` ke layar menggunakan `BIOS interrupt 0x10` (mode teletype).
+    - Parameter `char *str` adalah pointer ke string yang diakhiri null (\0).
+    - `Loop while (str[i] != '\0')` mengiterasi setiap karakter dan memanggil `interrupt(0x10, 0x0E00 | str[i], 0, 0, 0)` untuk menampilkan karakter ke layar.
+    - `Interrupt 0x10` dengan `AH=0x0E` menulis karakter di `AL (str[i])` ke layar tanpa mengubah posisi kursor.
+    - Bertujuan untuk menyediakan fungsi penulisan teks, digunakan oleh `shell` untuk menampilkan prompt, pesan, atau hasil perintah.
+- `void readString(char *buf) { ... }`
+  - Mendefinisikan fungsi `readString` untuk membaca input pengguna dari keyboard ke buffer.
+    - Parameter `char *buf` adalah buffer untuk menyimpan string input (maksimal 127 karakter).
+    - Menggunakan `interrupt(0x16, 0x0000, 0, 0, 0)` untuk membaca karakter dari keyboard (`BIOS interrupt 0x16, AH=0x00`).
+    - Menangani tiga kasus:
+      - `Enter (0x0D)`: Menambahkan null terminator, menampilkan carriage return dan newline, lalu keluar.
+      - `Backspace (0x08)`: Menghapus karakter terakhir dari buffer dan layar jika buffer tidak kosong.
+      - `Karakter printable (0x20 hingga 0x7E)`: Menyimpan karakter ke buffer dan menampilkannya ke layar jika buffer belum penuh.
+    - Bertujuan untuk mendukung input pengguna, seperti perintah `shell (add 4 2)`.
+- `void clearScreen() { ... }`
+  - Mendefinisikan fungsi `clearScreen` untuk mengosongkan layar teks VGA dan mengatur kursor.
+    - Loop `for (i = 0; i < 80 * 25 * 2; i += 2)` mengisi memori video (`0xB800`) dengan spasi (' ') dan atribut warna (`color`).
+    - Setiap karakter menggunakan 2 byte (karakter dan atribut), sehingga i += 2 mengakses pasangan karakter-atribut.
+    - Memanggil `interrupt(0x10, 0x0200, 0, 0, 0)` untuk mengatur kursor ke (0,0).
+    - Bertujuan untuk menginisialisasi atau mengosongkan layar yang digunakan saat `boot` atau perintah `clear`.
+
+2. std_lib.c
+```bash
+#include "../include/std_lib.h" 
+#include "../include/std_type.h"
+
+int div(int a, int b) {
+  int quotient = 0;
+  int sign = 1;
+
+  if (a < 0) {
+    a = -a;
+    sign = -sign;
+  }
+  if (b < 0) {
+    b = -b;
+    sign = -sign;
+  }
+
+  while (a >= b) {
+    a -= b;
+    quotient++;
+  }
+
+  return sign * quotient;
+}
+
+int imod(int a, int b) {
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (a >= b) a -= b;
+    return a;
+}
+
+
+bool strcmp(char *str1, char *str2) {
+  int i = 0;
+  while (str1[i] != '\0' && str2[i] != '\0') {
+    if (str1[i] != str2[i]) return false;
+    i++;
+  }
+  return str1[i] == str2[i];
+}
+
+void strcpy(char *dst, char *src) {
+  int i = 0;
+  while (src[i] != '\0') {
+    dst[i] = src[i];
+    i++;
+  }
+  dst[i] = '\0';
+}
+
+void clear(byte *buf, unsigned int size) {
+  int i;
+  for (i = 0; i < size; i++) {
+    buf[i] = 0;
+  }
+}
+
+void atoi(char *str, int *num) {
+  int result = 0;
+  int sign = 1;
+  int i = 0;
+
+  if (str[0] == '-') {
+    sign = -1;
+    i++;
+  }
+
+  while (str[i] != '\0') {
+    result = result * 10 + (str[i] - '0');
+    i++;
+  }
+
+  *num = sign * result;
+}
+
+void itoa(int num, char *str) {
+  int i = 0;
+  int sign = 0;
+  int temp = num;
+
+  if (num < 0) {
+    sign = 1;
+    num = -num;
+  }
+
+  do {
+    str[i++] = imod(num, 10) + '0';   
+    num = div(num, 10);             
+  } while (num > 0);
+
+  if (sign) {
+    str[i++] = '-';
+  }
+
+  str[i] = '\0';
+
+  // Reverse string
+  {
+    int start = 0;
+    int end = i - 1;
+    char c;
+    while (start < end) {
+      c = str[start];
+      str[start] = str[end];
+      str[end] = c;
+      start++;
+      end--;
+    }
+  }
+}
+```
+- `#include "../include/std_lib.h" dan #include "../include/std_type.h"`
+  - Meng-include file header `std_lib.h` dan `std_type.h` untuk menyediakan deklarasi fungsi dan tipe data yang diperlukan.
+    - `std_lib.h` mendeklarasikan fungsi-fungsi seperti `div`, `imod`, `strcmp`, `strcpy`, `clear`, `atoi`, dan `itoa` yang diimplementasikan dalam file ini.
+    - `std_type.h` mendefinisikan tipe data kustom seperti `byte`, `boolean`, `bool`, serta konstanta `true` dan `false` yang digunakan dalam fungsi seperti `strcmp` (mengembalikan bool) dan `clear` (menggunakan byte).
+    - Path `../include/` menunjukkan lokasi file header di direktori include relatif terhadap direktori `src`.
+    - Bertujuan untuk memastikan akses ke deklarasi fungsi dan tipe data yang konsisten di seluruh sistem operasi `EorzeOS`.
+- `int div(int a, int b) { ... }`
+  - Mendefinisikan fungsi `div` untuk melakukan pembagian `integer` dengan menghasilkan hasil bagi (`quotient`).
+    - Parameter `int a` adalah pembilang dan `int b` adalah penyebut.
+    - Variabel `sign` melacak tanda hasil (positif atau negatif) berdasarkan tanda input.
+    - Mengubah a dan b menjadi positif jika negatif, lalu menggunakan loop `while (a >= b)` untuk mengurangi b dari a dan menambah `quotient` hingga a lebih kecil dari b.
+    - Mengembalikan `sign * quotient` untuk memperhitungkan tanda asli input.
+    - Bertujuan untuk mendukung operasi pembagian dalam perintah `shell` seperti `div 10 2` yang menghasilkan 5.
+- `int imod(int a, int b) { ... }`
+  - Mendefinisikan fungsi `imod` untuk menghitung sisa (modulus) dari pembagian integer.
+    - Parameter `int a` adalah pembilang dan `int b` adalah penyebut.
+    - Mengubah a dan b menjadi positif jika negatif, lalu menggunakan loop `while (a >= b)` untuk mengurangi b dari a hingga a lebih kecil dari b.
+    - Mengembalikan nilai a yang tersisa sebagai hasil `modulus`.
+    - Bertujuan untuk mendukung operasi modulus yang digunakan dalam fungsi `itoa` untuk mengonversi digit integer ke karakter.
+- `bool strcmp(char *str1, char *str2) { ... }`
+  - Mendefinisikan fungsi `strcmp` untuk membandingkan dua string dan mengembalikan nilai `bool` (`true` jika sama, `false` jika berbeda).
+    - Parameter `char *str1` dan `char *str2` adalah pointer ke string yang akan dibandingkan.
+    - Loop `while (str1[i] != '\0' && str2[i] != '\0')` memeriksa karakter pada indeks i dari kedua string; jika berbeda, mengembalikan false.
+    - Setelah loop, memeriksa apakah kedua string berakhir bersamaan `(str1[i] == str2[i])`, mengembalikan true jika sama, false jika tidak.
+    - Bertujuan untuk mendukung perbandingan string di shell, misalnya memeriksa apakah perintah adalah `user` atau `grandcompany`.
+- `void strcpy(char *dst, char *src) { ... }`
+  - Mendefinisikan fungsi `strcpy` untuk menyalin string dari sumber ke tujuan.
+    - Parameter `char *dst` adalah buffer tujuan, dan `char *src` adalah string sumber.
+    - Loop `while (src[i] != '\0')` menyalin setiap karakter dari src ke dst, lalu menambahkan null terminator (\0) di akhir.
+    - Bertujuan untuk mendukung operasi penyalinan string, digunakan di `shell` untuk mengatur `username` atau `grandcompany`.
+- `void clear(byte *buf, unsigned int size) { ... }`
+  - Mendefinisikan fungsi `clear` untuk mengosongkan buffer dengan mengisi semua byte dengan nilai 0.
+    - Parameter `byte *buf` adalah pointer ke buffer, dan `unsigned int size` adalah ukuran buffer dalam byte.
+    - Loop `for (i = 0; i < size; i++)` mengatur setiap byte di buf ke 0.
+    - Menggunakan tipe `byte` dari `std_type.h` untuk manipulasi data tingkat rendah.
+    - Bertujuan untuk menginisialisasi buffer, digunakan di `parseCommand` untuk mengosongkan `cmd` dan `arg` sebelum parsing.
+- `void atoi(char *str, int *num) { ... }`
+  - Mendefinisikan fungsi `atoi` untuk mengonversi `string` ke `integer`.
+    - Parameter `char *str` adalah string yang berisi angka (misalnya, "123" atau "-123"), dan `int *num` adalah pointer untuk menyimpan hasil konversi.
+    - Memeriksa tanda negatif (-) untuk menentukan `sign`, lalu mengiterasi karakter untuk membangun nilai integer dengan mengalikan result dengan 10 dan menambahkan digit (str[i] - '0').
+    - Menyimpan hasil akhir (`sign * result`) ke `*num`.
+    - Bertujuan untuk mendukung konversi input string ke angka, digunakan di shell untuk operasi seperti `add 4 3`.
+- `void itoa(int num, char *str) { ... }`
+  - Mendefinisikan fungsi `itoa` untuk mengonversi `integer` ke `string`.
+    - Parameter `num` adalah angka yang akan dikonversi, dan `char *str` adalah buffer untuk menyimpan string hasil.
+    - Menangani tanda negatif dengan variabel `sign` dan mengubah `num` menjadi positif jika negatif.
+    - Loop `do-while` menggunakan `imod(num, 10)` untuk mendapatkan `digit` dan `div(num, 10)` untuk memproses digit berikutnya, menyimpan karakter `digit` ke str`.
+    - Menambahkan tanda - jika diperlukan dan null terminator (\0).
+    - Membalikkan string menggunakan loop `while (start < end)` untuk mendapatkan urutan digit yang benar.
+    - Bertujuan untuk mendukung konversi angka ke string untuk output `shell`, misalnya menampilkan hasil operasi `add 4 2`.
+
+3. shell.c
+```bash
+#include "../include/shell.h"
+#include "../include/kernel.h"
+#include "../include/std_lib.h"
+
+char username[64] = "user";
+char grandcompany[16] = "";
+char color = 0x07; 
+
+static char *random_responses[] = {"yo", "ts unami gng </3", "sygau"};
+
+void shell() {
+    char buf[128];
+    char cmd[64];
+    char arg[2][64];
+    int random_index;
+
+    printString("Welcome to EorzeOS!\r\n");
+    while (true) {
+        printPrompt();
+        readString(buf);
+
+        parseCommand(buf, cmd, arg);
+
+        if (strcmp(cmd, "user") == true) {
+            if (arg[0][0] == '\0') {
+                strcpy(username, "user");
+                printString("Username changed to user\n");
+            } else {
+                strcpy(username, arg[0]);
+                printString("Username changed to ");
+                printString(username);
+                printString("\n");
+            }
+        } else if (strcmp(cmd, "grandcompany") == true) {
+            if (strcmp(arg[0], "maelstrom") == true) {
+                strcpy(grandcompany, "Storm");
+                color = 0x04; // Merah
+                clearScreen();
+            } else if (strcmp(arg[0], "twinadder") == true) {
+                strcpy(grandcompany, "Serpent");
+                color = 0x0E; // Kuning
+                clearScreen();
+            } else if (strcmp(arg[0], "immortalflames") == true) {
+                strcpy(grandcompany, "Flame");
+                color = 0x01; // Biru
+                clearScreen();
+            } else {
+                printString("Invalid Grand Company\n");
+            }
+        } else if (strcmp(cmd, "clear") == true) {
+            strcpy(grandcompany, "");
+            color = 0x07; // Putih
+            clearScreen();
+        } else if (strcmp(cmd, "add") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            result = x + y;
+            itoa(result, result_str);
+            printString(result_str);
+            printString("\n");
+        } else if (strcmp(cmd, "sub") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            result = x - y;
+            itoa(result, result_str);
+            printString(result_str);
+            printString("\n");
+        } else if (strcmp(cmd, "mul") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            result = x * y;
+            itoa(result, result_str);
+            printString(result_str);
+            printString("\n");
+        } else if (strcmp(cmd, "div") == true) {
+            int x, y, result;
+            char result_str[16];
+            atoi(arg[0], &x);
+            atoi(arg[1], &y);
+            if (y == 0) {
+                printString("Division by zero\n");
+            } else {
+                result = div(x, y);
+                itoa(result, result_str);
+                printString(result_str);
+                printString("\n");
+            }
+        } else if (strcmp(cmd, "yogurt") == true) {
+            random_index = imod(getBiosTick(), 3);
+            printString(random_responses[random_index]);
+            printString("\n");
+        } else if (strcmp(cmd, "yo") == true) {
+            printString("gurt\n");
+        } else if (strcmp(cmd, "gurt") == true) {
+            printString("yo\n");
+        } else {
+            printString(buf);
+            printString("\n");
+        }
+    }
+}
+
+void parseCommand(char *buf, char *cmd, char arg[2][64]) {
+    int i = 0, j = 0, arg_idx = 0;
+    clear((byte *)cmd, 64);
+    clear((byte *)arg[0], 64);
+    clear((byte *)arg[1], 64);
+
+    while (buf[i] == ' ') i++;
+
+    while (buf[i] != ' ' && buf[i] != '\0' && j < 63) {
+        cmd[j] = buf[i];
+        i++;
+        j++;
+    }
+    cmd[j] = '\0';
+
+    while (buf[i] == ' ') i++;
+
+    j = 0;
+    while (buf[i] != ' ' && buf[i] != '\0' && j < 63) {
+        arg[0][j] = buf[i];
+        i++;
+        j++;
+    }
+    arg[0][j] = '\0';
+
+    while (buf[i] == ' ') i++;
+
+    j = 0;
+    while (buf[i] != ' ' && buf[i] != '\0' && j < 63) {
+        arg[1][j] = buf[i];
+        i++;
+        j++;
+    }
+    arg[1][j] = '\0';
+}
+
+void printPrompt() {
+printString("\r\n");
+printString(username);
+    if (grandcompany[0] != '\0') {
+        printString("@");
+        printString(grandcompany);
+    }
+    printString("> ");
+}
+```
+- `#include "../include/shell.h"`, `#include "../include/kernel.h"`, dan `#include "../include/std_lib.h"`
+  - Meng-include file header `shell.h`, `kernel.h`, dan `std_lib.h` untuk menyediakan deklarasi fungsi, variabel, dan tipe data yang diperlukan.
+    - `shell.h` mendeklarasikan fungsi seperti `shell`, `parseCommand`, `printPrompt`, serta variabel global `username`, `grandcompany`, dan `color`.
+    - `kernel.h` mendeklarasikan fungsi seperti `_putInMemory`, `_interrupt`, `_getBiosTick`, `printString`, `readString`, dan `clearScreen`.
+    - `std_lib.h` mendeklarasikan fungsi seperti `div`, `imod`, `strcmp`, `strcpy`, `clear`, `atoi`, dan `itoa`.
+    - Path `../include/` menunjukkan lokasi file header di direktori include relatif terhadap direktori `src`.
+    - Bertujuan untuk memastikan akses ke fungsi dan tipe data dari modul lain dalam sistem operasi `EorzeOS`.
+- `char username[64] = "user";`
+  - Mendefinisikan dan menginisialisasi variabel global `username` sebagai array karakter berukuran 64 byte dengan nilai awal "user".
+    - Digunakan untuk menyimpan nama pengguna yang ditampilkan di prompt `shell`, dapat diubah melalui perintah `user <username>` atau direset ke "user".
+    - Deklarasi ini sesuai dengan `extern char username[64]` di `shell.h` yang memungkinkan akses lintas modul.
+    - Bertujuan untuk menyimpan status nama pengguna yang memengaruhi tampilan prompt.
+- `char grandcompany[16] = "";`
+  - Mendefinisikan dan menginisialisasi variabel global `grandcompany` sebagai array karakter berukuran 16 byte dengan nilai awal string kosong.
+    - Menyimpan nama afiliasi Grand Company (misalnya, "`Storm`", "`Serpent`", "`Flame`"), diatur melalui perintah `grandcompany <company>` atau dihapus dengan `clear`.
+    - Sesuai dengan `extern char grandcompany[16]` di `shell.h` untuk akses lintas modul.
+    - Bertujuan untuk menyimpan status afiliasi pengguna yang memengaruhi warna terminal dan prompt.
+- `char color = 0x07;`
+  - Mendefinisikan dan menginisialisasi variabel global `color` sebagai variabel bertipe `char` dengan nilai awal `0x07` (kode warna putih untuk teks VGA).
+    - Digunakan untuk mengatur warna teks di memori video, diubah oleh perintah seperti `grandcompany` (misalnya, `0x04` untuk merah) atau `clear` (kembali ke `0x07`).
+    - Sesuai dengan `extern char color` di `shell.h` dan `kernel.c` untuk sinkronisasi warna antar modul.
+    - Bertujuan untuk menyimpan status warna terminal.
+- `static char *random_responses[] = {"yo", "ts unami gng </3", "sygau"};`
+  - Mendefinisikan array `statis random_responses` yang berisi tiga pointer ke string untuk respons acak saat perintah `yogurt` dieksekusi.
+    - Kata kunci static memastikan array hanya terlihat dalam `shell.c` dan tetap ada selama program berjalan.
+    - String seperti "`yo`", "`ts unami gng </3`", dan "`sygau`" adalah respons yang ditampilkan secara acak berdasarkan nilai dari `getBiosTick`.
+    - Bertujuan untuk memberikan fitur interaktif di `shell`.
+- `void shell() { ... }`
+  - Mendefinisikan fungsi `shell` sebagai inti dari antarmuka pengguna `EorzeOS`, menjalankan loop interaktif untuk memproses perintah.
+    - Menampilkan pesan selamat datang ("Welcome to EorzeOS!") saat dimulai.
+    - Loop `while (true)` memanggil `printPrompt` untuk menampilkan prompt, `readString` untuk membaca input, dan `parseCommand` untuk mem-parsing input menjadi `cmd` dan `arg`.
+    - Mendukung perintah seperti:
+      - `user`: Mengubah username ke argumen atau reset ke "user".
+      - `grandcompany`: Mengatur grandcompany dan color berdasarkan argumen (misalnya, "maelstrom" untuk merah).
+      - `clear`: Mengosongkan grandcompany dan mengatur color ke putih.
+      - `add`, `sub`, `mul`, `div`: Melakukan operasi aritmatika dengan mengonversi argumen menggunakan atoi, menghitung hasil, dan menampilkan dengan itoa.
+      - `yogurt`: Menampilkan respons acak dari random_responses berdasarkan imod(getBiosTick(), 3).
+      - `yo dan gurt`: Menampilkan respons sederhana untuk interaksi lucu.
+      - Lainnya: Mengembalikan input pengguna sebagai output (`echo`).
+    - Bertujuan untuk menyediakan antarmuka interaktif yang mendukung pengaturan pengguna, operasi aritmatika, dan fitur lainnya.
+- `void parseCommand(char *buf, char *cmd, char arg[2][64]) { ... }`
+  - Mendefinisikan fungsi `parseCommand` untuk mem-parsing input pengguna menjadi perintah dan hingga dua argumen.
+    - Parameter `char *buf` adalah buffer input, `char *cmd` menyimpan perintah, dan `char arg[2][64]` menyimpan hingga dua argumen.
+    - Menggunakan `clear` untuk mengosongkan `cmd` dan `arg` sebelum parsing.
+    - Mengiterasi buf untuk mengekstrak perintah dan argumen, mengabaikan spasi, dan menambahkan null terminator (\0) di akhir setiap string.
+    - Memastikan `cmd` dan `arg` tidak melebihi 63 karakter untuk mencegah overflow.
+    - Bertujuan untuk mempermudah pemrosesan input pengguna dengan struktur yang jelas.
+- `void printPrompt() { ... }`
+  - Mendefinisikan fungsi `printPrompt` untuk menampilkan prompt `shell` berdasarkan status `username` dan `grandcompany`.
+    - Menampilkan `newline (\r\n)`, diikuti oleh `username`.
+    - Jika `grandcompany` tidak kosong, menampilkan "`@`" dan nama `grandcompany`.
+    - Mengakhiri dengan "`> `" sebagai indikator input.
+    - Contoh: `user>` atau `user@Storm>` tergantung pada status.
+    - Bertujuan untuk memberikan indikator visual yang jelas kepada pengguna untuk memasukkan perintah.
