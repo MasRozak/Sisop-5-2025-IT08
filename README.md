@@ -813,4 +813,6 @@ run: build
     - Dalam konteks sebelumnya, Anda menggunakan bochs -f bochsrc.txt untuk menjalankan image floppy, yang perlu ditambahkan ke target ini untuk fungsi lengkap.
     - Bertujuan untuk menyediakan target untuk membangun dan langsung menjalankan sistem operasi, meskipun saat ini hanya memicu build.
 
-D. Hasil Demo
+D. Hasil
+
+https://github.com/user-attachments/assets/7d5a4bf8-aa0a-425c-9c43-c325562a7ec5
