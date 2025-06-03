@@ -815,4 +815,4 @@ run: build
 
 D. Hasil
 
-https://github.com/user-attachments/assets/7d5a4bf8-aa0a-425c-9c43-c325562a7ec5
+https://github.com/user-attachments/assets/a3942d8c-de29-47f8-aca2-f783e0f709de
