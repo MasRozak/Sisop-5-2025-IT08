@@ -814,4 +814,5 @@ run: build
     - Bertujuan untuk menyediakan target untuk membangun dan langsung menjalankan sistem operasi, meskipun saat ini hanya memicu build.
 
 D. Hasil Demo
-[https://github.com/MasRozak/Sisop-5-2025-IT08/tree/main/assets/](https://github.com/MasRozak/Sisop-5-2025-IT08/blob/main/assets/20250603-0259-49.3880138%20(1).mp4)
+
+[https://github.com/MasRozak/Sisop-5-2025-IT08/tree/main/assets/](https://github.com/MasRozak/Sisop-5-2025-IT08/blob/main/assets/demoIT08.mp4)
