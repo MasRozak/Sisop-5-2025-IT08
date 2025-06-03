@@ -729,3 +729,88 @@ printString(username);
     - Mengakhiri dengan "`> `" sebagai indikator input.
     - Contoh: `user>` atau `user@Storm>` tergantung pada status.
     - Bertujuan untuk memberikan indikator visual yang jelas kepada pengguna untuk memasukkan perintah.
+
+C. Makefile
+```bash
+all: build
+
+prepare:
+	mkdir -p bin
+	dd if=/dev/zero of=bin/floppy.img bs=512 count=2880
+
+bootloader:
+	nasm -f bin src/bootloader.asm -o bin/bootloader.bin
+
+stdlib:
+	bcc -ansi -c src/std_lib.c -o bin/std_lib.o
+
+shell:
+	bcc -ansi -c src/shell.c -o bin/shell.o
+
+kernel:
+	nasm -f as86 src/kernel.asm -o bin/kernel_asm.o
+	bcc -ansi -c src/kernel.c -o bin/kernel.o
+
+link:
+	ld86 -o bin/kernel.bin -d bin/kernel.o bin/kernel_asm.o bin/shell.o bin/std_lib.o
+	dd if=bin/bootloader.bin of=bin/floppy.img bs=512 count=1 conv=notrunc
+	dd if=bin/kernel.bin of=bin/floppy.img bs=512 seek=1 conv=notrunc
+
+build: prepare bootloader stdlib shell kernel link
+
+clean:
+	rm -rf bin/
+
+run: build
+```
+- `all: build`
+  - Mendefinisikan target all sebagai target default yang akan dijalankan jika perintah make dipanggil tanpa argumen.
+    - Target ini bergantung pada target build, sehingga menjalankan make akan memicu eksekusi target build.
+    - Bertujuan untuk menyediakan titik masuk utama yang sederhana untuk membangun seluruh sistem operasi EorzeOS.
+- `prepare:`
+  - Mendefinisikan target prepare untuk menyiapkan lingkungan build.
+    - Perintah mkdir -p bin membuat direktori bin jika belum ada (-p mencegah error jika direktori sudah ada).
+    - Perintah dd if=/dev/zero of=bin/floppy.img bs=512 count=2880 membuat file image floppy disk (bin/floppy.img) berukuran 1,44 MB (2880 sektor x 512 byte per sektor) dengan mengisi semua byte dengan nol.
+    - Bertujuan untuk menginisialisasi direktori output dan membuat image floppy kosong sebagai wadah untuk bootloader dan kernel.
+- `bootloader:`
+  - Mendefinisikan target bootloader untuk mengompilasi file bootloader.
+    - Perintah nasm -f bin src/bootloader.asm -o bin/bootloader.bin menggunakan assembler NASM untuk mengompilasi file src/bootloader.asm ke format biner (-f bin) dan menghasilkan output bin/bootloader.bin.
+    - File bootloader adalah kode assembly yang dimuat pertama kali oleh BIOS untuk memulai sistem operasi, biasanya menempati sektor pertama (512 byte) dari floppy disk.
+    - Bertujuan untuk menghasilkan file biner bootloader yang siap ditulis ke image floppy.
+- `stdlib:`
+  - Mendefinisikan target stdlib untuk mengompilasi pustaka standar (std_lib.c).
+    - Perintah bcc -ansi -c src/std_lib.c -o bin/std_lib.o menggunakan kompiler BCC (Bruce's C Compiler) dengan standar ANSI (-ansi) untuk mengompilasi file src/std_lib.c ke file objek (-c) bernama bin/std_lib.o.
+    - File std_lib.c berisi fungsi-fungsi seperti div, imod, strcmp, strcpy, clear, atoi, dan itoa yang mendukung operasi shell.
+    - Bertujuan untuk menghasilkan file objek dari pustaka standar untuk digunakan saat linking.
+- `shell:`
+  - Mendefinisikan target shell untuk mengompilasi modul shell (shell.c).
+    - Perintah bcc -ansi -c src/shell.c -o bin/shell.o menggunakan BCC dengan standar ANSI untuk mengompilasi file src/shell.c ke file objek bin/shell.o.
+    - File shell.c berisi logika antarmuka pengguna, seperti memproses perintah user, grandcompany, dan operasi aritmatika.
+    - Bertujuan untuk menghasilkan file objek dari modul shell untuk digunakan saat linking.
+- `kernel:`
+  - Mendefinisikan target kernel untuk mengompilasi kernel, yang terdiri dari kode assembly dan C.
+    - Perintah nasm -f as86 src/kernel.asm -o bin/kernel_asm.o menggunakan NASM untuk mengompilasi file src/kernel.asm ke format objek AS86 (-f as86), menghasilkan bin/kernel_asm.o. Format AS86 kompatibel dengan kompiler BCC untuk arsitektur 16-bit.
+    - Perintah bcc -ansi -c src/kernel.c -o bin/kernel.o mengompilasi file src/kernel.c ke file objek bin/kernel.o menggunakan BCC.
+    - File kernel.asm berisi fungsi tingkat rendah seperti _interrupt dan _putInMemory, sedangkan kernel.c berisi fungsi seperti main, printString, readString, dan clearScreen.
+    - Bertujuan untuk menghasilkan file objek dari kernel untuk digunakan saat linking.
+- `link:`
+  - Mendefinisikan target link untuk menggabungkan file objek menjadi kernel biner dan menulisnya ke image floppy.
+    - Perintah ld86 -o bin/kernel.bin -d bin/kernel.o bin/kernel_asm.o bin/shell.o bin/std_lib.o menggunakan linker LD86 untuk menggabungkan file objek (kernel.o, kernel_asm.o, shell.o, std_lib.o) ke file biner bin/kernel.bin. Opsi -d memungkinkan penggunaan simbol yang belum didefinisikan (berguna untuk debugging).
+    - Perintah dd if=bin/bootloader.bin of=bin/floppy.img bs=512 count=1 conv=notrunc menulis bootloader.bin ke sektor pertama image floppy tanpa memotong file (conv=notrunc).
+    - Perintah dd if=bin/kernel.bin of=bin/floppy.img bs=512 seek=1 conv=notrunc menulis kernel.bin mulai dari sektor kedua (seek=1) image floppy.
+    - Bertujuan untuk menghasilkan image floppy yang berisi bootloader dan kernel, siap dijalankan pada emulator seperti Bochs atau QEMU.
+- `build: prepare bootloader stdlib shell kernel link`
+  - Mendefinisikan target build yang bergantung pada target prepare, bootloader, stdlib, shell, kernel, dan link.
+    - Menjalankan semua target dependensi secara berurutan untuk membangun sistem operasi lengkap.
+    - Bertujuan untuk menyediakan target utama untuk mengotomatiskan seluruh proses build, dari persiapan hingga pembuatan image floppy.
+- `clean:`
+  - Mendefinisikan target clean untuk menghapus hasil build.
+    - Perintah rm -rf bin/ menghapus direktori bin beserta semua isinya (file objek, biner, dan image floppy).
+    - Bertujuan untuk membersihkan lingkungan build, memungkinkan pembangunan ulang dari awal tanpa sisa file lama.
+- `run: build`
+  - Mendefinisikan target run yang bergantung pada target build.
+    - Tidak ada perintah eksplisit di target ini, menunjukkan bahwa target ini mungkin dimaksudkan untuk menjalankan emulator (misalnya, Bochs atau QEMU) tetapi belum diimplementasikan sepenuhnya.
+    - Dalam konteks sebelumnya, Anda menggunakan bochs -f bochsrc.txt untuk menjalankan image floppy, yang perlu ditambahkan ke target ini untuk fungsi lengkap.
+    - Bertujuan untuk menyediakan target untuk membangun dan langsung menjalankan sistem operasi, meskipun saat ini hanya memicu build.
+
+D. Hasil Demo
