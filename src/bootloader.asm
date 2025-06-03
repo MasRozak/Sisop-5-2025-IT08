@@ -1,4 +1,3 @@
-
 ; bootloader.asm
 bits 16
 
