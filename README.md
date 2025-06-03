@@ -814,3 +814,5 @@ run: build
     - Bertujuan untuk menyediakan target untuk membangun dan langsung menjalankan sistem operasi, meskipun saat ini hanya memicu build.
 
 D. Hasil Demo
+[Akses Video dalam Assets](./assets/20250603-0259-49.3880138 (1))
+
